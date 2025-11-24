@@ -3,12 +3,15 @@ RealiTLScanner GUI (Windows only)
 
 # Screenshot:
 
-<img width="376" height="385" alt="image" src="https://github.com/user-attachments/assets/19054b2a-1162-499c-bdab-b08677142909" />
+<img width="376" height="512" alt="image" src="https://github.com/user-attachments/assets/ff39f40a-a77f-49ad-8123-2c34226824fb" />
+
 
 
 # Основные функции:
 
 - Сканирование IP адреса/доменов/подсетей (для VLESS SNI).
+- Сканирование из файла.
+- Пасинг доменов из ссылки и последующее их сканирование.
 - Автоматическое скачивание Country.mmdb.
 - Автоматическое сохранение в файл result.csv в папке с программой.
 - Возможность изменить порт, потоки и таймаут.
