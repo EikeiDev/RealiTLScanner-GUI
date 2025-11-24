@@ -9,15 +9,23 @@ using System.Windows.Forms;
 
 public partial class MainForm : Form
 {
-    // --- Элементы управления ---
+    private Label lblAddr;
     private TextBox txtAddr;
+
+    private Label lblFile;
+    private TextBox txtInFile;
+    private Button btnBrowse;
+
+    private Label lblUrl;
+    private TextBox txtUrl;
+
     private NumericUpDown numPort;
     private NumericUpDown numTimeout;
     private NumericUpDown numThreads;
     private CheckBox chkVerbose;
     private CheckBox chkIPv6;
     private Button btnRun;
-    private Label lblAddr;
+
     private Label lblPort;
     private Label lblTimeout;
     private Label lblThreads;
@@ -27,28 +35,25 @@ public partial class MainForm : Form
     private StatusStrip statusStrip;
     private ToolStripStatusLabel lblStatus;
 
-    // --- Логика ---
     private Process? runningProcess;
 
     public MainForm()
     {
-        InitializeComponent(); // Инициализируем наш новый дизайн
+        InitializeComponent();
         this.FormClosing += MainForm_FormClosing;
-
-        // Асинхронно проверяем и загружаем файл
-        // (добавил await, чтобы статус "Готово" появился после)
         _ = CheckAndDownloadGeoDB_Async();
     }
 
-    /// <summary>
-    /// Главный метод инициализации с новым "темным" дизайном.
-    /// Все элементы управления создаются и стилизуются здесь.
-    /// </summary>
     private void InitializeComponent()
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
         lblAddr = new Label();
         txtAddr = new TextBox();
+        lblFile = new Label();
+        txtInFile = new TextBox();
+        btnBrowse = new Button();
+        lblUrl = new Label();
+        txtUrl = new TextBox();
         gbParams = new GroupBox();
         tblParams = new TableLayoutPanel();
         lblPort = new Label();
@@ -71,42 +76,84 @@ public partial class MainForm : Form
         gbOptions.SuspendLayout();
         statusStrip.SuspendLayout();
         SuspendLayout();
-        // 
-        // lblAddr
-        // 
+        
         lblAddr.AutoSize = true;
         lblAddr.Location = new Point(12, 16);
         lblAddr.Name = "lblAddr";
         lblAddr.Size = new Size(74, 23);
-        lblAddr.TabIndex = 12;
+        lblAddr.TabIndex = 0;
         lblAddr.Text = "Address:";
-        // 
-        // txtAddr
-        // 
+        
         txtAddr.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtAddr.BackColor = Color.FromArgb(51, 51, 55);
         txtAddr.BorderStyle = BorderStyle.FixedSingle;
         txtAddr.ForeColor = Color.Gainsboro;
         txtAddr.Location = new Point(16, 42);
         txtAddr.Name = "txtAddr";
-        txtAddr.PlaceholderText = "Single address (optional)";
+        txtAddr.PlaceholderText = "Single target IP/Domain";
         txtAddr.Size = new Size(352, 30);
         txtAddr.TabIndex = 1;
-        // 
-        // gbParams
-        // 
+        
+        lblFile.AutoSize = true;
+        lblFile.ForeColor = Color.Gainsboro;
+        lblFile.Location = new Point(12, 80);
+        lblFile.Name = "lblFile";
+        lblFile.Size = new Size(146, 23);
+        lblFile.TabIndex = 2;
+        lblFile.Text = "Or Load from File:";
+        
+        txtInFile.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        txtInFile.BackColor = Color.FromArgb(51, 51, 55);
+        txtInFile.BorderStyle = BorderStyle.FixedSingle;
+        txtInFile.ForeColor = Color.Gainsboro;
+        txtInFile.Location = new Point(16, 106);
+        txtInFile.Name = "txtInFile";
+        txtInFile.PlaceholderText = "path/to/in.txt";
+        txtInFile.Size = new Size(255, 30);
+        txtInFile.TabIndex = 3;
+        
+        btnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        btnBrowse.BackColor = Color.FromArgb(63, 63, 70);
+        btnBrowse.FlatAppearance.BorderSize = 0;
+        btnBrowse.FlatStyle = FlatStyle.Flat;
+        btnBrowse.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+        btnBrowse.ForeColor = Color.White;
+        btnBrowse.Location = new Point(278, 105);
+        btnBrowse.Name = "btnBrowse";
+        btnBrowse.Size = new Size(90, 32);
+        btnBrowse.TabIndex = 4;
+        btnBrowse.Text = "Browse";
+        btnBrowse.UseVisualStyleBackColor = false;
+        btnBrowse.Click += btnBrowse_Click;
+        
+        lblUrl.AutoSize = true;
+        lblUrl.ForeColor = Color.Gainsboro;
+        lblUrl.Location = new Point(12, 144);
+        lblUrl.Name = "lblUrl";
+        lblUrl.Size = new Size(156, 23);
+        lblUrl.TabIndex = 5;
+        lblUrl.Text = "Or Crawl from URL:";
+        
+        txtUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        txtUrl.BackColor = Color.FromArgb(51, 51, 55);
+        txtUrl.BorderStyle = BorderStyle.FixedSingle;
+        txtUrl.ForeColor = Color.Gainsboro;
+        txtUrl.Location = new Point(16, 170);
+        txtUrl.Name = "txtUrl";
+        txtUrl.PlaceholderText = "https://example.com/list";
+        txtUrl.Size = new Size(352, 30);
+        txtUrl.TabIndex = 6;
+        
         gbParams.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         gbParams.Controls.Add(tblParams);
         gbParams.ForeColor = Color.Gainsboro;
-        gbParams.Location = new Point(16, 85);
+        gbParams.Location = new Point(16, 214);
         gbParams.Name = "gbParams";
-        gbParams.Size = new Size(352, 140);
-        gbParams.TabIndex = 2;
+        gbParams.Size = new Size(352, 144);
+        gbParams.TabIndex = 7;
         gbParams.TabStop = false;
         gbParams.Text = "Parameters";
-        // 
-        // tblParams
-        // 
+        
         tblParams.ColumnCount = 2;
         tblParams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
         tblParams.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
@@ -123,11 +170,9 @@ public partial class MainForm : Form
         tblParams.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
         tblParams.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
         tblParams.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
-        tblParams.Size = new Size(346, 111);
+        tblParams.Size = new Size(346, 115);
         tblParams.TabIndex = 0;
-        // 
-        // lblPort
-        // 
+        
         lblPort.Anchor = AnchorStyles.Left;
         lblPort.AutoSize = true;
         lblPort.Location = new Point(3, 7);
@@ -135,146 +180,127 @@ public partial class MainForm : Form
         lblPort.Size = new Size(45, 23);
         lblPort.TabIndex = 0;
         lblPort.Text = "Port:";
-        // 
-        // numPort
-        // 
+        
         numPort.Anchor = AnchorStyles.Left;
         numPort.BackColor = Color.FromArgb(51, 51, 55);
         numPort.BorderStyle = BorderStyle.FixedSingle;
         numPort.ForeColor = Color.Gainsboro;
-        numPort.Location = new Point(141, 3);
+        numPort.Location = new Point(141, 4);
         numPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
         numPort.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         numPort.Name = "numPort";
-        numPort.Size = new Size(150, 30);
-        numPort.TabIndex = 3;
+        numPort.Size = new Size(202, 30);
+        numPort.TabIndex = 8;
         numPort.Value = new decimal(new int[] { 443, 0, 0, 0 });
-        // 
-        // lblThreads
-        // 
+        
         lblThreads.Anchor = AnchorStyles.Left;
         lblThreads.AutoSize = true;
-        lblThreads.Location = new Point(3, 44);
+        lblThreads.Location = new Point(3, 45);
         lblThreads.Name = "lblThreads";
         lblThreads.Size = new Size(74, 23);
         lblThreads.TabIndex = 4;
         lblThreads.Text = "Threads:";
-        // 
-        // numThreads
-        // 
+        
         numThreads.Anchor = AnchorStyles.Left;
         numThreads.BackColor = Color.FromArgb(51, 51, 55);
         numThreads.BorderStyle = BorderStyle.FixedSingle;
         numThreads.ForeColor = Color.Gainsboro;
-        numThreads.Location = new Point(141, 40);
+        numThreads.Location = new Point(141, 42);
         numThreads.Maximum = new decimal(new int[] { 64, 0, 0, 0 });
         numThreads.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         numThreads.Name = "numThreads";
-        numThreads.Size = new Size(150, 30);
-        numThreads.TabIndex = 7;
+        numThreads.Size = new Size(202, 30);
+        numThreads.TabIndex = 9;
         numThreads.Value = new decimal(new int[] { 10, 0, 0, 0 });
-        // 
-        // lblTimeout
-        // 
+        
         lblTimeout.Anchor = AnchorStyles.Left;
         lblTimeout.AutoSize = true;
-        lblTimeout.Location = new Point(3, 81);
+        lblTimeout.Location = new Point(3, 84);
         lblTimeout.Name = "lblTimeout";
         lblTimeout.Size = new Size(99, 23);
         lblTimeout.TabIndex = 8;
         lblTimeout.Text = "Timeout (s):";
-        // 
-        // numTimeout
-        // 
+        
         numTimeout.Anchor = AnchorStyles.Left;
         numTimeout.BackColor = Color.FromArgb(51, 51, 55);
         numTimeout.BorderStyle = BorderStyle.FixedSingle;
         numTimeout.ForeColor = Color.Gainsboro;
-        numTimeout.Location = new Point(141, 77);
+        numTimeout.Location = new Point(141, 80);
         numTimeout.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
         numTimeout.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         numTimeout.Name = "numTimeout";
-        numTimeout.Size = new Size(150, 30);
-        numTimeout.TabIndex = 5;
+        numTimeout.Size = new Size(202, 30);
+        numTimeout.TabIndex = 10;
         numTimeout.Value = new decimal(new int[] { 5, 0, 0, 0 });
-        // 
-        // gbOptions
-        // 
+        
         gbOptions.Controls.Add(chkIPv6);
         gbOptions.Controls.Add(chkVerbose);
         gbOptions.ForeColor = Color.Gainsboro;
-        gbOptions.Location = new Point(16, 231);
+        gbOptions.Location = new Point(16, 364);
         gbOptions.Name = "gbOptions";
         gbOptions.Size = new Size(171, 100);
-        gbOptions.TabIndex = 8;
+        gbOptions.TabIndex = 11;
         gbOptions.TabStop = false;
         gbOptions.Text = "Options";
-        // 
-        // chkIPv6
-        // 
+        
         chkIPv6.AutoSize = true;
         chkIPv6.Location = new Point(15, 29);
         chkIPv6.Name = "chkIPv6";
         chkIPv6.Size = new Size(120, 27);
-        chkIPv6.TabIndex = 9;
+        chkIPv6.TabIndex = 12;
         chkIPv6.Text = "Enable IPv6";
         chkIPv6.UseVisualStyleBackColor = true;
-        // 
-        // chkVerbose
-        // 
+        
         chkVerbose.AutoSize = true;
         chkVerbose.Location = new Point(15, 62);
         chkVerbose.Name = "chkVerbose";
         chkVerbose.Size = new Size(93, 27);
-        chkVerbose.TabIndex = 8;
+        chkVerbose.TabIndex = 13;
         chkVerbose.Text = "Verbose";
         chkVerbose.UseVisualStyleBackColor = true;
-        // 
-        // btnRun
-        // 
+        
         btnRun.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnRun.BackColor = Color.FromArgb(0, 122, 204);
         btnRun.Cursor = Cursors.Hand;
         btnRun.FlatAppearance.BorderSize = 0;
         btnRun.FlatStyle = FlatStyle.Flat;
         btnRun.ForeColor = Color.White;
-        btnRun.Location = new Point(193, 246);
+        btnRun.Location = new Point(193, 376);
         btnRun.Name = "btnRun";
-        btnRun.Size = new Size(175, 85);
-        btnRun.TabIndex = 10;
+        btnRun.Size = new Size(175, 88);
+        btnRun.TabIndex = 14;
         btnRun.Text = "Scan (CLI)";
         btnRun.UseVisualStyleBackColor = false;
         btnRun.Click += btnRun_Click;
-        // 
-        // statusStrip
-        // 
+        
         statusStrip.BackColor = Color.FromArgb(30, 30, 30);
         statusStrip.ImageScalingSize = new Size(20, 20);
         statusStrip.Items.AddRange(new ToolStripItem[] { lblStatus });
-        statusStrip.Location = new Point(0, 347);
+        statusStrip.Location = new Point(0, 485);
         statusStrip.Name = "statusStrip";
         statusStrip.Size = new Size(384, 26);
         statusStrip.SizingGrip = false;
-        statusStrip.TabIndex = 11;
+        statusStrip.TabIndex = 15;
         statusStrip.Text = "statusStrip1";
-        // 
-        // lblStatus
-        // 
+        
         lblStatus.ForeColor = Color.Gray;
         lblStatus.Name = "lblStatus";
         lblStatus.Size = new Size(50, 20);
         lblStatus.Text = "Ready";
-        // 
-        // MainForm
-        // 
+        
         AutoScaleDimensions = new SizeF(9F, 23F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(30, 30, 30);
-        ClientSize = new Size(384, 373);
+        ClientSize = new Size(384, 511);
         Controls.Add(statusStrip);
         Controls.Add(btnRun);
         Controls.Add(gbOptions);
         Controls.Add(gbParams);
+        Controls.Add(txtUrl);
+        Controls.Add(lblUrl);
+        Controls.Add(btnBrowse);
+        Controls.Add(txtInFile);
+        Controls.Add(lblFile);
         Controls.Add(txtAddr);
         Controls.Add(lblAddr);
         Font = new Font("Segoe UI", 10F);
@@ -300,11 +326,35 @@ public partial class MainForm : Form
         PerformLayout();
     }
 
-    /// <summary>
-    /// Логика запуска процесса (немного улучшена обратная связь)
-    /// </summary>
+    private void btnBrowse_Click(object sender, EventArgs e)
+    {
+        using (OpenFileDialog ofd = new OpenFileDialog())
+        {
+            ofd.Title = "Select Target List";
+            ofd.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            ofd.CheckFileExists = true;
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                txtInFile.Text = ofd.FileName;
+                txtAddr.Text = "";
+                txtUrl.Text = "";
+            }
+        }
+    }
+
     private async void btnRun_Click(object sender, EventArgs e)
     {
+        bool hasAddr = !string.IsNullOrWhiteSpace(txtAddr.Text);
+        bool hasFile = !string.IsNullOrWhiteSpace(txtInFile.Text);
+        bool hasUrl = !string.IsNullOrWhiteSpace(txtUrl.Text);
+
+        if (!hasAddr && !hasFile && !hasUrl)
+        {
+            MessageBox.Show("Please specify a Target: Address, File, or URL.", "Missing Arguments", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
         btnRun.Enabled = false;
         btnRun.Text = "Scanning...";
         lblStatus.Text = "Процесс сканирования запущен...";
@@ -321,13 +371,23 @@ public partial class MainForm : Form
 
         StringBuilder args = new StringBuilder();
 
-        if (!string.IsNullOrWhiteSpace(txtAddr.Text))
+        if (hasUrl)
+        {
+            args.Append($" -url \"{txtUrl.Text}\"");
+        }
+        else if (hasFile)
+        {
+            args.Append($" -in \"{txtInFile.Text}\"");
+        }
+        else
+        {
             args.Append($" -addr {txtAddr.Text}");
+        }
 
         args.Append($" -port {numPort.Value}");
         args.Append($" -thread {numThreads.Value}");
         args.Append($" -timeout {numTimeout.Value}");
-        args.Append(" -out result.csv"); // Жестко задаем имя, как и в оригинале
+        args.Append(" -out result.csv");
 
         if (chkIPv6.Checked) args.Append(" -46");
         if (chkVerbose.Checked) args.Append(" -v");
@@ -338,16 +398,15 @@ public partial class MainForm : Form
             {
                 FileName = exePath,
                 Arguments = args.ToString(),
-                RedirectStandardOutput = false, // Оставляем, чтобы пользователь видел CLI
+                RedirectStandardOutput = false,
                 RedirectStandardError = false,
                 UseShellExecute = false,
-                CreateNoWindow = false // Оставляем, чтобы пользователь видел CLI
+                CreateNoWindow = false
             };
 
             runningProcess = new Process { StartInfo = psi };
             runningProcess.Start();
 
-            // Асинхронно ждем завершения
             await runningProcess.WaitForExitAsync();
             lblStatus.Text = "Сканирование завершено.";
         }
@@ -361,16 +420,13 @@ public partial class MainForm : Form
             runningProcess = null;
             btnRun.Enabled = true;
             btnRun.Text = "Scan (CLI)";
-            // Можно добавить задержку, чтобы "Сканирование завершено" было видно
+
             await Task.Delay(3000);
             if (lblStatus.Text == "Сканирование завершено.")
                 lblStatus.Text = "Готово";
         }
     }
 
-    /// <summary>
-    /// Обработчик закрытия формы (остался без изменений)
-    /// </summary>
     private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
     {
         if (runningProcess != null && !runningProcess.HasExited)
@@ -379,9 +435,6 @@ public partial class MainForm : Form
         }
     }
 
-    /// <summary>
-    /// Проверка и загрузка GeoDB (улучшена обратная связь в StatusStrip)
-    /// </summary>
     private async Task CheckAndDownloadGeoDB_Async()
     {
         string dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Country.mmdb");
@@ -389,13 +442,13 @@ public partial class MainForm : Form
 
         if (File.Exists(dbPath))
         {
-            await Task.Delay(1000); // Небольшая задержка, чтобы "Ready" не пропало
+            await Task.Delay(1000);
             lblStatus.Text = "Готово (база GeoDB уже существует)";
             return;
         }
 
         var result = MessageBox.Show(
-            "Файл Country.mmdb не найден. Этот файл необходим для работы сканера.\n\nЗагрузить его сейчас? (git.io/GeoLite2-Country.mmdb)",
+            "Файл Country.mmdb не найден. Загрузить его сейчас? (git.io/GeoLite2-Country.mmdb)",
             "Требуется файл",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Question);
