@@ -1,2 +1,0 @@
-D:\Users\notdev\Desktop\RealiTLScanner-main\RealiTLScannerGUI\publish\RealiTLScannerGUI.pdb
-D:\Users\notdev\Desktop\RealiTLScanner-main\RealiTLScannerGUI\publish\RealiTLScannerGUI.exe
