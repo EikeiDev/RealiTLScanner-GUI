@@ -24,7 +24,6 @@ A modern, dark-themed Windows GUI for [RealiTLScanner](https://github.com/XTLS/R
 ## 📸 Screenshots
 
 <img width="1359" height="967" alt="image" src="https://github.com/user-attachments/assets/ae9ba6f9-5a83-4ad4-bb12-a0b52507a149" />
-<img width="1359" height="967" alt="image" src="https://github.com/user-attachments/assets/4d305736-37a5-4a87-838c-f2cef006f14c" />
 
 ---
 
